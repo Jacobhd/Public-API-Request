@@ -2,24 +2,19 @@
    Public API Request
 ======================================== */
 
-const gallery = document.getElementById('gallery');
-const url = 'https://randomuser.me/api/?results=12&nat=us,gb,nz,au'
-//const container = document.querySelector('.container'); //for close button
+/* fetches employees, parsing data to json,
+   returned data displays on screen */
 
-
-/* fetches employees parsing data to json, returned data displays on screen */
-
-function fetchData(url) {
-  return fetch(url)
+function fetchData() {
+  fetch('https://randomuser.me/api/?results=12&nat=us,gb,nz,au')
     .then(checkStatus)
-    .then(res => res.json())
+    .then(response => response.json())
     .then(data => appendEmployees(data.results))
     .catch(error => console.log('Looks like there was a problem!', error))
 }
 
-Promise.all([
-  fetchData(url)
-])
+fetchData();
+
 
 /* Returns statusText if error occured */
 
@@ -32,8 +27,8 @@ Promise.all([
   }
 
 
-/* Dynamically displays 12 random Employees with basic info in <body>,
-   Click function to show modal with in-depth information */
+/* Dynamically displays 12 random Employees with basic info,
+   click function shows modal with in-depth information */
 
 function appendEmployees(data) {
   const users = data.map((employee, index) => {
@@ -54,12 +49,13 @@ function appendEmployees(data) {
   gallery.insertAdjacentHTML('beforeend', users);
 }
 
-/* Creates clickable card displays Employees info in closable window */
+/* Clickable card displays employee's data in closable modal */
 
 function createModal(employee, data, index) {
   const div = document.createElement('div');
   const dob = getFormattedDOB(employee.dob.date)
   div.className = 'modal-container';
+
   const html = `<div class="modal">
     <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
     <div class="modal-info-container">
@@ -69,13 +65,17 @@ function createModal(employee, data, index) {
       <p class="modal-text cap">${employee.location.city}</p>
       <hr>
       <p class="modal-text">Cell: ${employee.cell}</p>
-      <p class="modal-text cap">Address:${employee.location.street}, ${employee.location.city}, ${employee.location.state}, ${employee.location.postcode}</p>
+      <p class="modal-text cap">Address: ${employee.location.street}, ${employee.location.city}, ${employee.location.state}, ${employee.location.postcode}</p>
       <p class="modal-text">Birthday: ${dob}</p>
     </div>
   </div>`
   div.insertAdjacentHTML('beforeend', html);
   document.querySelector('body').appendChild(div);
-  //add X btn functionality
+
+  const closeButton = document.getElementById('modal-close-btn');
+  closeButton.addEventListener('click', e => {
+    div.remove();
+  })
 }
 
 
@@ -89,7 +89,7 @@ function click(employee, data, index) {
 }
 
 
-/* Formats birthday data */
+/* Formats data for modal => Date of Birth */
 
 function getFormattedDOB(date) {
   let birthday = new Date(date);
@@ -100,54 +100,18 @@ function getFormattedDOB(date) {
 }
 
 
-/* Add modal exit functionality */
-
-//hide/display the modal and update the markup
-//and info in the modal info container div
-
-
-
 
 /*  Comments   *//*
-
-Sucessfully pulling 12 users randomized each refresh
-Data is returned as array of objects containing these key:value pairs
-gender:   name:   location:   email:    login:    id:(SSN)
-dob:    age:    cell:   nat:(us)    phone:    picture:    registered:
-
 
 Displays 12 random employees to page
 correct data in body Photo / Name / Email / city
 correct data in modal photo / name / email / city
 ------------------seperation -----------------------
 cell / address ( city / nationality / postal ) / birthday
+closable modal
 
 
-error pulling objects to console
 error pulling address in Modal
-error in Cell #
-error X btn doesn't close
-
-
-add eventListener to x button
-add close functionality to button
-
-
-create the Modal
-add the modal
-give modal correct information
-modal to display and hide on demand
-
-create and append a new modal each time one is needed
-*do not create a separate modal for each employee*
-
-create and append just once all the parts of the modal that never change:
-modal container div
-  modal div
-    close button
-      modal info container div
-then in click handler add the cards
-can just hide/display the modal and update the markup
-and info in the modal info container div
+placing "modal-container" div at end of body element (after script)
 
 */
