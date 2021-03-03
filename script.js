@@ -6,7 +6,7 @@
    returned data to display on screen */
 
 function fetchData() {
-  fetch('https://randomuser.me/api/?results=12&nat=us,gb,nz,au')
+  fetch('https://randomuser.me/api/?results=12&nat=us')
     .then(checkStatus)
     .then(response => response.json())
     .then(data => appendEmployees(data.results))
